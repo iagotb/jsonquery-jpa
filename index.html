@@ -1,87 +1,116 @@
 <!doctype html>
-<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
-<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>jsonquery-jpa by markserrano</title>
 
-  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
-  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script type="text/javascript" src="javascripts/script.js"></script>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>jsonquery-jpa</h1>
+        <p>translates JSON queries to JPA queries.</p>
 
-  <title>jsonquery-jpa</title>
-  <meta name="description" content="JSONQuery JPA translates JSON queries to JPA queries.">
+        <p class="view"><a href="https://github.com/markserrano/jsonquery-jpa">View the Project on GitHub <small>markserrano/jsonquery-jpa</small></a></p>
 
-  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-</head>
+        <ul>
+          <li><a href="https://github.com/markserrano/jsonquery-jpa/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/markserrano/jsonquery-jpa/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/markserrano/jsonquery-jpa">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>JSONQuery JPA</h1>
 
-<body>
+<p>JSONQuery JPA translates JSON queries to JPA queries. Using <a href="https://github.com/mysema/querydsl">QueryDSL</a> each 
+translated query is type-safe and fluent . JSON query syntax is based on the popular <a href="http://www.trirand.com/blog/">jqGrid</a> 
+plugin for jQuery. Paging implementation is simplified with <a href="https://github.com/SpringSource/spring-data-jpa/">Spring Data JPA</a></p>
 
-  <div class="wrapper">
-    <header>
-      <h1 class="title">jsonquery-jpa</h1>
-    </header>
-    <div id="container">
-      <p class="tagline">JSONQuery JPA translates JSON queries to JPA queries.</p>
-      <div id="main" role="main">
-        <div class="download-bar">
-        <div class="inner">
-          <a href="https://github.com/markserrano/jsonquery-jpa/tarball/master" class="download-button tar"><span>Download</span></a>
-          <a href="https://github.com/markserrano/jsonquery-jpa/zipball/master" class="download-button zip"><span>Download</span></a>
-          <a href="https://github.com/markserrano/jsonquery-jpa" class="code">View jsonquery-jpa on GitHub</a>
-        </div>
-        <span class="blc"></span><span class="trc"></span>
-        </div>
-        <article class="markdown-body">
-          <h3>Welcome to GitHub Pages.</h3>
+<p>Its main purpose is to provide easy wrapper for JavaScript plugins and widgets that query Java-based backend data layer.</p>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>Here's a sample JSON query: </p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<pre><code>"{"groupOp":"AND","rules":" +
+  "[{"field":"id","op":"eq","data":"1"}," +
+    "{"field":"name","op":"bw","data":"Jane Adams"}," +
+    "{"field":"age","op":"gt","data":"20"}," +
+    "{"field":"money","op":"lt","data":"2000.75"}," +
+    "{"field":"birthDate","op":"eq","data":"1959-09-30T00:00:00.000Z"}," +
+    "{"field":"parent.id","op":"eq","data":"2"}," +
+    "{"field":"creationDate","op":"eq","data":"01-31-1980 +5"}" +
+    "]}";
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>Note: The framework is designed only for reading data. It doesn't create, update, or delete.</p>
 
-<h3>Designer Templates</h3>
+<h1>Getting Started</h1>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>Dowload or clone from Git and then use Maven:</p>
 
-<h3>Rather Drive Stick?</h3>
+<pre><code>$ git clone ...
+$ mvn install
+</code></pre>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<h2>Sample Backend Usage</h2>
 
-<h3>Authors and Contributors</h3>
+<p>Create a backend controller and map the JSON query parameter as follows (this is example uses a Spring MVC and Spring Data JPA):</p>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<pre><code>public @ResponseBody ListWrapper&lt;Person&gt; records(@RequestParam("query") Boolean query) {    
+    ...
+    Page&lt;Person&gt; records = service.read(query);
+    ListWrapper&lt;Person&gt; response = new ListWrapper&lt;Person&gt;();
+    response.setRows(records.getRows());
+    return response;
+    ...
+}
+</code></pre>
 
-<h3>Support or Contact</h3>
+<p>Here the <code>query</code> argument maps to the <code>query</code> request parameter, and it contains the JSON query string. For a list of examples, please see <a href="https://github.com/markserrano/jsonquery-jpa-samples">JSONQuery Samples</a> project. There's a great chance that your favorite jQuery table are covered already.</p>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-        </article>
-      </div>
+<h2>Working with Maven</h2>
+
+<p>You need to install Maven first. If you don't have it yet, please visit <a href="http://maven.apache.org/">http://maven.apache.org/</a></p>
+
+<p>To import the project in Eclipse</p>
+
+<pre><code>$ mvn eclipse:eclipse -Dwtpversion=2.0
+</code></pre>
+
+<p>To install to your repository</p>
+
+<pre><code>$ mvn install
+</code></pre>
+
+<p>To create a jar</p>
+
+<pre><code>$ mvn package
+</code></pre>
+
+<p>To use the dependency to your pom.xml (make sure to use the correct version)</p>
+
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;com.github.markserrano&lt;/groupId&gt;
+    &lt;artifactId&gt;jsonquery-jpa&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0.BUILD-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;jar&lt;/type&gt;
+    &lt;scope&gt;compile&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/markserrano">markserrano</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-    <footer>
-      <div class="owner">
-      <p><a href="https://github.com/markserrano" class="avatar"><img src="https://secure.gravatar.com/avatar/4965f6979e2349dc1e40bac3cf66d0f1?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png" width="48" height="48"/></a> <a href="https://github.com/markserrano">markserrano</a> maintains <a href="https://github.com/markserrano/jsonquery-jpa">jsonquery-jpa</a></p>
-
-
-      </div>
-      <div class="creds">
-        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
-      </div>
-    </footer>
-  </div>
-  <div class="current-section">
-    <a href="#top">Scroll to top</a>
-    <a href="https://github.com/markserrano/jsonquery-jpa/tarball/master" class="tar">tar</a><a href="https://github.com/markserrano/jsonquery-jpa/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
-    <p class="name"></p>
-  </div>
-
-  
-</body>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
 </html>

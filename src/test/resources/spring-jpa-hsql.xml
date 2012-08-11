@@ -36,7 +36,7 @@
 	    <entry key="hibernate.hbm2ddl.auto" value="update"/>
 	    <entry key="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 	</util:map>
-	
+
 	<bean id="hibernateVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
 	            p:showSql="false"/>
 
@@ -45,7 +45,7 @@
 		p:entityManagerFactory-ref="entityManagerFactory"/>
 
 	<jdbc:embedded-database id="jpaDataSource" type="HSQL">
-	  <jdbc:script location="${db.structure.test}"/>
-	  <jdbc:script location="${db.data.test}"/>
+	  <jdbc:script location="${db.hsql.structure.test}"/>
+	  <jdbc:script location="${db.hsql.data.test}"/>
 	</jdbc:embedded-database>
 </beans>

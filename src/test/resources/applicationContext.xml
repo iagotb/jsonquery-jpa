@@ -23,5 +23,5 @@
 	<bean id="deployProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean"
         p:location="classpath:spring.properties" />
         
-	<import resource="spring-jpa.xml"/>
+	<import resource="spring-jpa-hsql.xml"/>
 </beans>

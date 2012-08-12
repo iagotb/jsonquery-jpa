@@ -19,7 +19,7 @@ package com.github.markserrano.jsonquery.jpa.response;
 import java.io.Serializable;
 import java.util.List;
 
-public class SigmaResponse <T extends Serializable>{
+public class SigmaResponse <T extends Serializable>  implements Serializable {
 
 	private List<T> data;
 	private PageInfo pageInfo;

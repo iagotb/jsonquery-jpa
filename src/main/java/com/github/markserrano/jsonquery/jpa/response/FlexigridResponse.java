@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author Mark Anthony L. Serrano
  */
-public class FlexigridResponse<T extends Serializable> {
+public class FlexigridResponse<T extends Serializable>  implements Serializable  {
 
 	private Integer page;
 	private Integer total;

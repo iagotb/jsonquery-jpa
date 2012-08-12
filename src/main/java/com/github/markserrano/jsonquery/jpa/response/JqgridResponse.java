@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Mark Anthony L. Serrano
  */
-public class JqgridResponse<T extends Serializable> {
+public class JqgridResponse<T extends Serializable> implements Serializable {
 
 	/**
 	 * Current page

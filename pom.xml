@@ -10,7 +10,7 @@
 	
 	<groupId>com.github.markserrano</groupId>
 	<artifactId>jsonquery-jpa</artifactId>
-	<version>1.0.1.RELEASE</version>
+	<version>1.0.1.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>JSONQuery JPA</name>

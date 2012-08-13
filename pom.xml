@@ -2,7 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+	<parent>
+    	<groupId>org.sonatype.oss</groupId>
+    	<artifactId>oss-parent</artifactId>
+    	<version>7</version>
+	</parent>
+	
 	<groupId>com.github.markserrano</groupId>
 	<artifactId>jsonquery-jpa</artifactId>
 	<version>1.0.1.BUILD-SNAPSHOT</version>
@@ -14,7 +19,7 @@
 	<inceptionYear>2011-2012</inceptionYear>
 	<organization>
 		<name>Independent</name>
-		<url>(pending)</url>
+		<url>Not Applicable</url>
 	</organization>
 
 	<developers>
@@ -23,7 +28,7 @@
 			<name>Mark Anthony Serrano</name>
 			<email>mark-serrano at outlook.com</email>
 			<organization>Independent</organization>
-			<organizationUrl>(pending)</organizationUrl>
+			<organizationUrl>Not Applicable</organizationUrl>
 			<roles>
 				<role>Project lead</role>
 			</roles>
@@ -31,7 +36,29 @@
 		</developer>
 	</developers>
 
-	<!-- Versions -->
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<comments>
+			Copyright 2011-2012 the original author or authors.
+
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+
+			     http://www.apache.org/licenses/LICENSE-2.0
+
+			Unless required by applicable law or agreed to in writing, software
+			distributed under the License is distributed on an "AS IS" BASIS,
+			WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+			implied.
+			See the License for the specific language governing permissions and
+			limitations under the License.
+			</comments>
+		</license>
+	</licenses>
+	
 	<properties>
 		<spring.version>3.1.0.RC1</spring.version>
 		<spring.data.jpa.version>1.0.2.RELEASE</spring.data.jpa.version>
@@ -547,4 +574,9 @@
 		</profile>
 	</profiles>
 
+	<scm>
+        <url>https://github.com/markserrano/jsonquery-jpa</url>
+        <connection>scm:git:git://github.com/markserrano/jsonquery-jpa.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:markserrano/jsonquery-jpa.git</developerConnection>
+    </scm>
 </project>

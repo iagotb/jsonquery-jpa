@@ -20,15 +20,21 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.github.markserrano.jsonquery.jpa.builder.operator.EqualBuilder;
 import com.github.markserrano.jsonquery.jpa.domain.Child;
 import com.github.markserrano.jsonquery.jpa.filter.JsonFilter;
+import com.github.markserrano.jsonquery.jpa.util.DateTimeZoneModifier;
+import com.github.markserrano.jsonquery.jpa.util.DateTimeZoneRule;
 import com.mysema.query.BooleanBuilder;
 
 public class EqualBuilderTest {
-
+	
+	@Rule
+	public DateTimeZoneRule dateTimeZoneRule = new DateTimeZoneRule();
+	
 	private BooleanBuilder booleanBuilder; 
 	private JsonFilter.Rule rule;
 	
@@ -90,5 +96,47 @@ public class EqualBuilderTest {
 	public void testGet_BooleanAsNumber_0() {
 		rule = new JsonFilter.Rule("and", "married", "eq", "0"); 
 		Assert.assertEquals("child.married = false", EqualBuilder.get(Child.class, "child", booleanBuilder, rule).toString());
+	}
+	
+	@Test 
+	@DateTimeZoneModifier("Asia/Manila")
+	public void testDate() {
+		rule = new JsonFilter.Rule("and", "creationDate", "eq", "2012-08-15"); 
+		Assert.assertEquals("child.creationDate = Wed Aug 15 00:00:00 CST 2012", EqualBuilder.get(Child.class, "child", booleanBuilder, rule).toString());
+	}
+	
+	@Test 
+	@DateTimeZoneModifier("Asia/Manila")
+	public void testDateTime() {
+		rule = new JsonFilter.Rule("and", "birthDate", "eq", "2012-08-15"); 
+		Assert.assertEquals("child.birthDate = 2012-08-15T00:00:00.000+08:00", EqualBuilder.get(Child.class, "child", booleanBuilder, rule).toString());
+	}
+	
+	@Test 
+	@DateTimeZoneModifier("Asia/Manila")
+	public void testDate_WithFullTimezone() {
+		rule = new JsonFilter.Rule("and", "creationDate", "eq", "2012-08-15T00:00:00.000Z"); 
+		Assert.assertEquals("child.creationDate = Wed Aug 15 00:00:00 CST 2012", EqualBuilder.get(Child.class, "child", booleanBuilder, rule).toString());
+	}
+	
+	@Test 
+	@DateTimeZoneModifier("Asia/Manila")
+	public void testDate_WithFullTimezone_FromAnotherZone() {
+		rule = new JsonFilter.Rule("and", "creationDate", "eq", "2012-08-15T19:00:00.000Z"); 
+		Assert.assertEquals("child.creationDate = Wed Aug 15 00:00:00 CST 2012", EqualBuilder.get(Child.class, "child", booleanBuilder, rule).toString());
+	}
+	
+	@Test 
+	@DateTimeZoneModifier("Asia/Manila")
+	public void testDateTime_WithFullTimezone() {
+		rule = new JsonFilter.Rule("and", "birthDate", "eq", "2012-08-15T00:00:00.000Z"); 
+		Assert.assertEquals("child.birthDate = 2012-08-15T00:00:00.000+08:00", EqualBuilder.get(Child.class, "child", booleanBuilder, rule).toString());
+	}
+	
+	@Test 
+	@DateTimeZoneModifier("Asia/Manila")
+	public void testDateTime_WithFullTimezone_FromAnotherZone() {
+		rule = new JsonFilter.Rule("and", "birthDate", "eq", "2012-08-15T00:00:00.000+06:00"); 
+		Assert.assertEquals("child.birthDate = 2012-08-15T00:00:00.000+08:00", EqualBuilder.get(Child.class, "child", booleanBuilder, rule).toString());
 	}
 }

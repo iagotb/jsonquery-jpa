@@ -575,8 +575,8 @@
 	</profiles>
 
 	<scm>
-        <url>https://github.com/markserrano/jsonquery-jpa</url>
-        <connection>scm:git:git://github.com/markserrano/jsonquery-jpa.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:markserrano/jsonquery-jpa.git</developerConnection>
+        <url>git@github.com:markserrano/jsonquery-jpa.git</url>
+        <connection>scm:git:git:@github.com:markserrano/jsonquery-jpa.git</connection>
+        <developerConnection>scm:git:git@github.com:markserrano/jsonquery-jpa.git</developerConnection>
     </scm>
 </project>

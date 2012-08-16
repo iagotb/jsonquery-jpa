@@ -61,12 +61,12 @@ To create a jar
 
 	$ mvn package
 	
-To use the dependency to your pom.xml (make sure to use the correct version)
+To use the dependency add the following to your pom.xml
 
 	<dependency>
 		<groupId>com.github.markserrano</groupId>
 		<artifactId>jsonquery-jpa</artifactId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>1.0.1.RELEASE</version>
 		<type>jar</type>
 		<scope>compile</scope>
 	</dependency>

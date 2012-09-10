@@ -47,7 +47,7 @@ import com.mysema.query.types.OrderSpecifier;
 public class OrderServiceTest {
 
 	@Autowired
-	private IEntityService<Child> service;
+	private IFilterService<Child> service;
 	private JsonBooleanBuilder jsonBooleanBuilder = new JsonBooleanBuilder(Child.class);
 
 	private Order order = new Order(Child.class);
@@ -112,9 +112,10 @@ public class OrderServiceTest {
 		Page<Child> results = service.readAndCount(builder, new PageRequest(0,3), Child.class, orderSpecifier);
 		
 		Assert.assertNotNull(results);
-		Assert.assertEquals(2, results.getTotalElements());
-		Assert.assertEquals( fmt.parseDateTime("2001-10-01"), results.getContent().get(0).getBirthDate() );
-		Assert.assertEquals( fmt.parseDateTime("1996-01-01"), results.getContent().get(1).getBirthDate() );
+		Assert.assertEquals(3, results.getTotalElements());
+		Assert.assertEquals( fmt.parseDateTime("1995-10-05"), results.getContent().get(0).getBirthDate() );
+		Assert.assertEquals( fmt.parseDateTime("2003-10-12"), results.getContent().get(1).getBirthDate() );
+		Assert.assertEquals( fmt.parseDateTime("1996-01-01"), results.getContent().get(2).getBirthDate() );
 	}
 	
 	@Test 
@@ -130,8 +131,9 @@ public class OrderServiceTest {
 		Page<Child> results = service.readAndCount(builder, new PageRequest(0,3), Child.class, orderSpecifier);
 		
 		Assert.assertNotNull(results);
-		Assert.assertEquals(2, results.getTotalElements());
+		Assert.assertEquals(3, results.getTotalElements());
 		Assert.assertEquals( fmt.parseDateTime("1996-01-01"), results.getContent().get(0).getBirthDate() );
-		Assert.assertEquals( fmt.parseDateTime("2001-10-01"), results.getContent().get(1).getBirthDate() );
+		Assert.assertEquals( fmt.parseDateTime("2003-10-12"), results.getContent().get(1).getBirthDate() );
+		Assert.assertEquals( fmt.parseDateTime("1995-10-05"), results.getContent().get(2).getBirthDate() );
 	}
 }

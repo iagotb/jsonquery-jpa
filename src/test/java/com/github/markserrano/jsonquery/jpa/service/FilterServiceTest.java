@@ -42,10 +42,10 @@ import com.mysema.query.types.path.StringPath;
 @ContextConfiguration (locations = { "classpath:applicationContext.xml" })
 @TransactionConfiguration (transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class EntityServiceTest {
+public class FilterServiceTest {
 
 	@Autowired
-	private IEntityService<Parent> service;
+	private IFilterService<Parent> service;
 	
 	private Order order = new Order(Parent.class);
 	private OrderSpecifier<?> orderSpecifier;

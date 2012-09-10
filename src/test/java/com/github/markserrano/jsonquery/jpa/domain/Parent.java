@@ -17,11 +17,18 @@
 package com.github.markserrano.jsonquery.jpa.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity(name="parent")
 public class Parent implements Serializable {
@@ -35,6 +42,10 @@ public class Parent implements Serializable {
 	
 	@OneToOne
 	private Thing thing;
+	
+	@OneToMany (mappedBy="parent", cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
+	private List<Child> children;
 	
 	public Long getId() {
 		return id;
@@ -53,6 +64,13 @@ public class Parent implements Serializable {
 	}
 	public void setThing(Thing thing) {
 		this.thing = thing;
+	}
+	
+	public List<Child> getChildren() {
+		return children;
+	}
+	public void setChildren(List<Child> children) {
+		this.children = children;
 	}
 	@Override
 	public String toString() {

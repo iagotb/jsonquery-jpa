@@ -35,8 +35,11 @@ import com.github.markserrano.jsonquery.jpa.domain.Parent;
 import com.github.markserrano.jsonquery.jpa.enumeration.OrderEnum;
 import com.github.markserrano.jsonquery.jpa.filter.JsonFilter;
 import com.github.markserrano.jsonquery.jpa.specifier.Order;
+import com.github.markserrano.jsonquery.jpa.util.QueryUtil;
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.path.PathBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration (locations = { "classpath:applicationContext.xml" })
@@ -45,7 +48,7 @@ import com.mysema.query.types.OrderSpecifier;
 public class ParentEntityServiceTest {
 
 	@Autowired
-	private IEntityService<Parent> service;
+	private IFilterService<Parent> service;
 	private JsonBooleanBuilder jsonBooleanBuilder = new JsonBooleanBuilder(Parent.class);
 	private Order order = new Order(Parent.class);
 	private OrderSpecifier<?> orderSpecifier;
@@ -108,6 +111,24 @@ public class ParentEntityServiceTest {
 		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getTotalElements());
+	}
+	
+	@Test 
+	public void testReadAndCount_UsingJoins() {
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"id\",\"op\":\"gt\",\"data\":\"1\"}]" +
+		"}";
+
+		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
+
+		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
+		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "parent");
+		
+		Page<Parent> results = service.readAndCount(builder, new PageRequest(0,3), Parent.class, p.get("children"), alias, orderSpecifier);
+		
+		Assert.assertNotNull(results);
+		Assert.assertEquals(5, results.getTotalElements());
+		//Assert.assertEquals(1, results.getContent().get(0));
 	}
 
 }

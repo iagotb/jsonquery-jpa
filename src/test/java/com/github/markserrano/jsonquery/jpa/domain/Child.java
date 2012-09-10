@@ -22,6 +22,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Type;
@@ -46,6 +47,7 @@ public class Child implements Serializable {
 	private Date creationDate;
 	
 	@ManyToOne
+	@JoinColumn(name="parent_id")
 	private Parent parent;
 	
 	public Long getId() {

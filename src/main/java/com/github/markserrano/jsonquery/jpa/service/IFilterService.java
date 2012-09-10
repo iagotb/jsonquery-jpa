@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import com.github.markserrano.jsonquery.jpa.builder.JsonBooleanBuilder;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.path.PathBuilder;
 
 /**
  * 
@@ -38,5 +39,11 @@ public interface IFilterService<T extends Serializable> {
 	public Long count(BooleanBuilder builder, Class<T> clazz, OrderSpecifier order);
 	public Page<T> read(String filter, Class<T> clazz, Pageable page, OrderSpecifier order);
 	public JsonBooleanBuilder getJsonBooleanBuilder(Class<T> clazz);
+	
+	public List<T> read(BooleanBuilder builder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias, OrderSpecifier order);
+	public Long count(BooleanBuilder builder, Class<T> clazz, PathBuilder<?> alias, PathBuilder<?> joinPath, OrderSpecifier order);
+	public Page<T> readAndCount(BooleanBuilder builder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias, OrderSpecifier order);
+	
+	public T findOne(BooleanBuilder builder, Class<T> clazz);
 
 }

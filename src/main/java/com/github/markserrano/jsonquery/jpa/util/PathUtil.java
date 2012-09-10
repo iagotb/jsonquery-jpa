@@ -18,6 +18,7 @@ package com.github.markserrano.jsonquery.jpa.util;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import com.mysema.query.types.Path;
@@ -68,8 +69,13 @@ public class PathUtil {
 			// For references on another objects, we assume that we reference by id
 			// And the type is Long and Serializable
 			return entityPath.get(new NumberPath<Long>(Long.class, field)); 
+			
+		} else if ( ClassUtil.getType(clazz, field) == List.class ) {
+			// For references on another objects, we assume that we reference by id
+			// And the type is Long and Serializable
+			return entityPath.get(new NumberPath<Long>(Long.class, field)); 
 		} 
-		
+
 		throw new RuntimeException("No matching path for " + field);
 	}
 }

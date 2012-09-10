@@ -44,7 +44,7 @@ import com.mysema.query.types.OrderSpecifier;
 public class ParentChildThingEntityServiceTest {
 
 	@Autowired
-	private IEntityService<Child> service;
+	private IFilterService<Child> service;
 	private JsonBooleanBuilder jsonBooleanBuilder = new JsonBooleanBuilder(Child.class);
 	private Order order = new Order(Child.class);
 	private OrderSpecifier<?> orderSpecifiers;
@@ -88,9 +88,11 @@ public class ParentChildThingEntityServiceTest {
 		Page<Child> results = service.readAndCount(builder, new PageRequest(0,3), Child.class, orderSpecifiers);
 		
 		Assert.assertNotNull(results);
-		Assert.assertEquals(2, results.getTotalElements());
+		Assert.assertEquals(4, results.getTotalElements());
+		Assert.assertEquals( 3, results.getContent().size() ); // paged at 3 records
 		Assert.assertEquals( "StoreA", results.getContent().get(0).getParent().getStore() );
-		Assert.assertEquals( "StoreD", results.getContent().get(1).getParent().getStore() );
+		Assert.assertEquals( "StoreA", results.getContent().get(1).getParent().getStore() );
+		Assert.assertEquals( "StoreA", results.getContent().get(2).getParent().getStore() );
 	}
 	
 	@Test 
@@ -105,8 +107,9 @@ public class ParentChildThingEntityServiceTest {
 		Page<Child> results = service.readAndCount(builder, new PageRequest(0,3), Child.class, orderSpecifiers);
 		
 		Assert.assertNotNull(results);
-		Assert.assertEquals(1, results.getTotalElements());
-		Assert.assertEquals( "StoreD", results.getContent().get(0).getParent().getStore() );
+		Assert.assertEquals(2, results.getTotalElements());
+		Assert.assertEquals( "StoreA", results.getContent().get(0).getParent().getStore() );
+		Assert.assertEquals( "StoreD", results.getContent().get(1).getParent().getStore() );
 	}
 	
 }

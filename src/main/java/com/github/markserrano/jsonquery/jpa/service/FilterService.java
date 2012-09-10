@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.github.markserrano.jsonquery.jpa.builder.JsonBooleanBuilder;
+import com.github.markserrano.jsonquery.jpa.builder.operator.EqualBuilder;
 import com.github.markserrano.jsonquery.jpa.filter.JsonFilter;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.jpa.JPQLQuery;
@@ -46,6 +47,18 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 
 	@Autowired
 	private EntityManagerFactory emf;
+	
+	@Override
+	public T findOne(BooleanBuilder builder, Class<T> clazz) {
+		String variable = clazz.getSimpleName().substring(0, 1).toLowerCase() + clazz.getSimpleName().substring(1);
+		PathBuilder<T> entityPath = new PathBuilder<T>(clazz, variable);
+		EntityManager em = emf.createEntityManager();
+		EntityPath<T> path = entityPath;
+		
+		JPQLQuery result = new JPAQuery(em).from(path).where(builder);
+		
+		return result.uniqueResult(entityPath);
+	}
 	
 	@Override
 	public T find(BooleanBuilder builder, Class<T> clazz) {
@@ -66,14 +79,41 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 	}
 	
 	@Override
+	public Page<T> readAndCount(BooleanBuilder builder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
+		Page<T> pageImpl = new PageImpl<T>(read(builder, page, clazz, joinPath, alias, order), page, count(builder, clazz, joinPath, alias, order));
+		return pageImpl;
+	}
+	
+	@Override
 	public List<T> read(BooleanBuilder builder, Pageable page, Class<T> clazz, OrderSpecifier order) {
 		String variable = clazz.getSimpleName().substring(0, 1).toLowerCase() + clazz.getSimpleName().substring(1);
 		PathBuilder<T> entityPath = new PathBuilder<T>(clazz, variable);
 		EntityManager em = emf.createEntityManager();
 		EntityPath<T> path = entityPath;
 		
-		JPQLQuery result = new JPAQuery(em).from(path).where(builder).orderBy(order);;
+		JPQLQuery result = new JPAQuery(em).from(path).where(builder).orderBy(order);
 		
+		if (page != null) {
+			result.offset(page.getOffset());
+			result.limit(page.getPageSize());
+		}
+		
+		return result.list(entityPath);
+	}
+	
+	@Override
+	public List<T> read(BooleanBuilder builder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
+		String variable = clazz.getSimpleName().substring(0, 1).toLowerCase() + clazz.getSimpleName().substring(1);
+		PathBuilder<T> entityPath = new PathBuilder<T>(clazz, variable);
+		EntityManager em = emf.createEntityManager();
+		EntityPath<T> path = entityPath;
+		
+		EntityPath<T> jAlias = (EntityPath<T>) alias;
+		EntityPath<T> jPath = (EntityPath<T>) joinPath;
+		JPQLQuery result = new JPAQuery(em).from(path).join(jPath, jAlias).with(builder).orderBy(order);
+		
+		System.out.println(result.toString());
+
 		if (page != null) {
 			result.offset(page.getOffset());
 			result.limit(page.getPageSize());
@@ -89,11 +129,25 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 		EntityManager em = emf.createEntityManager();
 		EntityPath<T> path = entityPath;
 		
-		JPQLQuery result = new JPAQuery(em).from(path).where(builder).orderBy(order);;
+		JPQLQuery result = new JPAQuery(em).from(path).where(builder).orderBy(order);
 		
 		return result.count();
 	}
 
+	@Override
+	public Long count(BooleanBuilder builder, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
+		String variable = clazz.getSimpleName().substring(0, 1).toLowerCase() + clazz.getSimpleName().substring(1);
+		PathBuilder<T> entityPath = new PathBuilder<T>(clazz, variable);
+		EntityManager em = emf.createEntityManager();
+		EntityPath<T> path = entityPath;
+
+		EntityPath<T> jAlias = (EntityPath<T>) alias;
+		EntityPath<T> jPath = (EntityPath<T>) joinPath;
+		JPQLQuery result = new JPAQuery(em).from(path).join(jPath, jAlias).with(builder).orderBy(order);
+		
+		return result.count();
+	}
+	
 	@Override
 	public Page<T> read(String filter, Class<T> clazz, Pageable page, OrderSpecifier order) {
 		return readAndCount(getJsonBooleanBuilder(clazz).build(new JsonFilter(filter)), page, clazz, order);

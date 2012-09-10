@@ -79,8 +79,8 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 	}
 	
 	@Override
-	public Page<T> readAndCount(BooleanBuilder builder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
-		Page<T> pageImpl = new PageImpl<T>(read(builder, page, clazz, joinPath, alias, order), page, count(builder, clazz, joinPath, alias, order));
+	public Page<T> readAndCount(BooleanBuilder builder, BooleanBuilder joinBuilder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
+		Page<T> pageImpl = new PageImpl<T>(read(builder, joinBuilder, page, clazz, joinPath, alias, order), page, count(builder, joinBuilder, clazz, joinPath, alias, order));
 		return pageImpl;
 	}
 	
@@ -102,7 +102,7 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 	}
 	
 	@Override
-	public List<T> read(BooleanBuilder builder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
+	public List<T> read(BooleanBuilder builder, BooleanBuilder joinBuilder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
 		String variable = clazz.getSimpleName().substring(0, 1).toLowerCase() + clazz.getSimpleName().substring(1);
 		PathBuilder<T> entityPath = new PathBuilder<T>(clazz, variable);
 		EntityManager em = emf.createEntityManager();
@@ -110,7 +110,7 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 		
 		EntityPath<T> jAlias = (EntityPath<T>) alias;
 		EntityPath<T> jPath = (EntityPath<T>) joinPath;
-		JPQLQuery result = new JPAQuery(em).from(path).join(jPath, jAlias).with(builder).orderBy(order);
+		JPQLQuery result = new JPAQuery(em).from(path).join(jPath, jAlias).with(joinBuilder).where(builder).orderBy(order);
 		
 		System.out.println(result.toString());
 
@@ -135,7 +135,7 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 	}
 
 	@Override
-	public Long count(BooleanBuilder builder, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
+	public Long count(BooleanBuilder builder, BooleanBuilder joinBuilder, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias,OrderSpecifier order) {
 		String variable = clazz.getSimpleName().substring(0, 1).toLowerCase() + clazz.getSimpleName().substring(1);
 		PathBuilder<T> entityPath = new PathBuilder<T>(clazz, variable);
 		EntityManager em = emf.createEntityManager();
@@ -143,7 +143,7 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 
 		EntityPath<T> jAlias = (EntityPath<T>) alias;
 		EntityPath<T> jPath = (EntityPath<T>) joinPath;
-		JPQLQuery result = new JPAQuery(em).from(path).join(jPath, jAlias).with(builder).orderBy(order);
+		JPQLQuery result = new JPAQuery(em).from(path).join(jPath, jAlias).with(joinBuilder).where(builder).orderBy(order);
 		
 		return result.count();
 	}

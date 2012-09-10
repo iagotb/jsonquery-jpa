@@ -50,6 +50,7 @@ public class ParentEntityServiceTest {
 	@Autowired
 	private IFilterService<Parent> service;
 	private JsonBooleanBuilder jsonBooleanBuilder = new JsonBooleanBuilder(Parent.class);
+	private JsonBooleanBuilder childBooleanBuilder = new JsonBooleanBuilder(Child.class);
 	private Order order = new Order(Parent.class);
 	private OrderSpecifier<?> orderSpecifier;
 	
@@ -61,6 +62,21 @@ public class ParentEntityServiceTest {
 	@After
 	public void tearDown() throws Exception {
 		orderSpecifier = null;
+	}
+	
+	@Test 
+	public void testReadAndCount_WhenNoFilterPresent() {
+		String filter = QueryUtil.init();
+
+		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
+		
+		Page<Parent> results = service.readAndCount(builder, new PageRequest(0,3), Parent.class, orderSpecifier);
+		
+		Assert.assertNotNull(results);
+		Assert.assertEquals(4, results.getTotalElements());
+		Assert.assertEquals( "StoreA", results.getContent().get(0).getStore() );
+		Assert.assertEquals( "StoreB", results.getContent().get(1).getStore() );
+		Assert.assertEquals( "StoreC", results.getContent().get(2).getStore() );
 	}
 	
 	@Test 
@@ -114,21 +130,105 @@ public class ParentEntityServiceTest {
 	}
 	
 	@Test 
-	public void testReadAndCount_UsingJoins() {
-		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
-		"[{\"field\":\"id\",\"op\":\"gt\",\"data\":\"1\"}]" +
+	public void testReadAndCount_UsingJoins_WhenParentIsNotFiltered_ButChildIsFiltered() {
+		// Scenario 1
+		String filter = QueryUtil.init();
+		String childFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"age\",\"op\":\"gt\",\"data\":\"1\"}]" +
 		"}";
 
 		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
-
+		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
 		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
-		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "parent");
+		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "child");
+		Page<Parent> results = service.readAndCount(builder, childBuilder, new PageRequest(0,3), Parent.class, p.get("children"), alias, orderSpecifier);
+	
+		Assert.assertNotNull(results);
+		Assert.assertEquals(6, results.getTotalElements());
 		
-		Page<Parent> results = service.readAndCount(builder, new PageRequest(0,3), Parent.class, p.get("children"), alias, orderSpecifier);
+		// Scenario 2
+		childFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+				"[{\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}]" +
+				"}";
+		childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
+		results = service.readAndCount(builder, childBuilder, new PageRequest(0,3), Parent.class, p.get("children"), alias, orderSpecifier);
 		
 		Assert.assertNotNull(results);
-		Assert.assertEquals(5, results.getTotalElements());
-		//Assert.assertEquals(1, results.getContent().get(0));
+		Assert.assertEquals(2, results.getTotalElements());
 	}
+	
+	@Test 
+	public void testReadAndCount_UsingJoins_WhenParentAndChildAreNotFiltered() {
+		String filter = QueryUtil.init();
+		String childFilter = QueryUtil.init();
 
+		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
+		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
+
+		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
+		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "child");
+		
+		Page<Parent> results = service.readAndCount(builder, childBuilder, new PageRequest(0,10), Parent.class, p.get("children"), alias, orderSpecifier);
+		
+		Assert.assertNotNull(results);
+		Assert.assertEquals(3, results.getTotalElements());
+		Assert.assertEquals(1, results.getContent().get(0).getId().intValue());
+		Assert.assertEquals(1, results.getContent().get(1).getId().intValue());
+		Assert.assertEquals(4, results.getContent().get(2).getId().intValue());
+	}
+	
+	@Test 
+	public void testReadAndCount_UsingJoins_WhenParentIsFiltered_AndChildIsFiltered() {
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+				"[{\"field\":\"store\",\"op\":\"ne\",\"data\":\"StoreB\"}]" +
+				"}";
+		String childFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"age\",\"op\":\"gt\",\"data\":\"18\"}]" +
+		"}";
+
+		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
+		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
+
+		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
+		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "child");
+		
+		Page<Parent> results = service.readAndCount(builder, childBuilder, new PageRequest(0,10), Parent.class, p.get("children"), alias, orderSpecifier);
+		
+		Assert.assertNotNull(results);
+		Assert.assertEquals(3, results.getTotalElements());
+		Assert.assertEquals(1, results.getContent().get(0).getId().intValue());
+		Assert.assertEquals(1, results.getContent().get(1).getId().intValue());
+		Assert.assertEquals(4, results.getContent().get(2).getId().intValue());
+	}
+	
+	@Test 
+	public void testReadAndCount_UsingJoins_WhenParentIsFiltered_AndChildIsFiltered_AndPaged() {
+		// Scenario 1
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+				"[{\"field\":\"store\",\"op\":\"ne\",\"data\":\"StoreB\"}]" +
+				"}";
+		String childFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"age\",\"op\":\"gt\",\"data\":\"18\"}]" +
+		"}";
+
+		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
+		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
+
+		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
+		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "child");
+		
+		Page<Parent> results = service.readAndCount(builder, childBuilder, new PageRequest(0,2), Parent.class, p.get("children"), alias, orderSpecifier);
+		
+		Assert.assertNotNull(results);
+		Assert.assertEquals(3, results.getTotalElements());
+		Assert.assertEquals(1, results.getContent().get(0).getId().intValue());
+		Assert.assertEquals(1, results.getContent().get(1).getId().intValue());
+		
+		// Scenario 2
+		results = service.readAndCount(builder, childBuilder, new PageRequest(1,2), Parent.class, p.get("children"), alias, orderSpecifier);
+		
+		Assert.assertNotNull(results);
+		Assert.assertEquals(3, results.getTotalElements());
+		Assert.assertEquals(4, results.getContent().get(0).getId().intValue());
+	}
 }

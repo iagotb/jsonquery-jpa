@@ -16,6 +16,12 @@
 
 package com.github.markserrano.jsonquery.jpa.util;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.log4j.Logger;
 
 import com.github.markserrano.jsonquery.jpa.enumeration.OperatorEnum;
@@ -128,6 +134,67 @@ public class QueryUtil {
 		} else {
 			return filter.replace("rules\":[", "rules\":["+addOr(field, operatorEnum, data));
 		}
+	}
+
+	public static Map<String, Object> remove(String filter, String field) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		filter = initFilter(filter);
+		
+		String pattern = "\\" + OPEN_BRACKET +
+				FIELD + COLON + "(" + escape(field) + ")" + COMMA +
+				OP + COLON + "(" + "\"[A-Za-z]{2}\"" + ")" + COMMA  +
+				DATA + COLON + "(" + ".+" + ")" + "\\" + CLOSE_BRACKET;
+		//System.out.println(pattern);
+		
+		Pattern p = Pattern.compile(pattern);
+		Matcher m = p.matcher(filter);
+		if (m.find()) {
+		   // System.out.println("+++++");
+		   // System.out.println(m.group(1));
+		   // System.out.println(m.group(2));
+		   // System.out.println(m.group(3).split("\\}")[0]);
+		   // System.out.println("+++++");
+		    map.put("field", m.group(1).replace("\"", ""));
+		    map.put("op", m.group(2).replace("\"", ""));
+		    map.put("data", m.group(3).split("\\}")[0].replace("\"", ""));
+			map.put("isFound", true);
+								
+			String expression = OPEN_BRACKET +
+							FIELD + COLON + escape(map.get("field").toString()) + COMMA +
+							OP + COLON + escape(map.get("op").toString()) + COMMA +
+							DATA + COLON + escape(map.get("data").toString()) + CLOSE_BRACKET;
+
+			//System.out.println(expression);
+			String f1 = filter.replace(expression + ",", "");
+			String f2 = f1.replace(expression, "");
+			map.put("parentFilter", f2);
+		}
+		
+		return map;
+	}
+	
+	public static Map<String, String> createParentAndChildFilter(String parentFilter, List<String> fieldsToRemove) {
+		
+		Map<String, String> filterMap = new HashMap<String, String>();
+		
+		String childFilter = initFilter(null);
+		
+		Map<String, Object> map = null;
+		for (String f: fieldsToRemove) {
+			if (map == null) {
+				map = QueryUtil.remove(parentFilter, f);
+			} else {
+				map = QueryUtil.remove(map.get("parentFilter").toString(), f);
+			}
+			childFilter = QueryUtil.addAnd(childFilter, map.get("field").toString(), 
+					OperatorEnum.getEnum(map.get("op").toString()), map.get("data").toString());
+		}
+		
+		filterMap.put("childFilter", childFilter);
+		filterMap.put("parentFilter", map.get("parentFilter").toString());
+		
+		return filterMap;
 	}
 
 	public static String escape(String word) {

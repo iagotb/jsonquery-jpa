@@ -16,6 +16,10 @@
 
 package com.github.markserrano.jsonquery.jpa.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import junit.framework.Assert;
 
 import org.junit.After;
@@ -207,5 +211,93 @@ public class QueryUtilTest {
 	public void testInitFilter_WhenNotEmpty_ThenReturnSameFilter() {
 		String filter = "{\"groupOp\":\"AND\",\"rules\":[{\"junction\":\"and\",\"field\":\"id\",\"op\":\"eq\",\"data\":\"1\"}]}";
 		Assert.assertEquals(filter, QueryUtil.initFilter(filter));
+	}
+	
+	@Test
+	public void testRemoveAnd() {
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"name\",\"op\":\"bw\",\"data\":\"Jane Adams\"}," +
+		"{\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}," +
+		"{\"field\":\"money\",\"op\":\"lt\",\"data\":\"2000.75\"}," +
+		"{\"field\":\"birthDate\",\"op\":\"eq\",\"data\":\"1959-09-30T00:00:00.000Z\"}," +
+		"{\"field\":\"creationDate\",\"op\":\"eq\",\"data\":\"01-31-1980\"}" +
+		"]}";
+		
+		String expected = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"name\",\"op\":\"bw\",\"data\":\"Jane Adams\"}," +
+		"{\"field\":\"money\",\"op\":\"lt\",\"data\":\"2000.75\"}," +
+		"{\"field\":\"birthDate\",\"op\":\"eq\",\"data\":\"1959-09-30T00:00:00.000Z\"}," +
+		"{\"field\":\"creationDate\",\"op\":\"eq\",\"data\":\"01-31-1980\"}" +
+		"]}";
+
+		Map<String, Object> map = QueryUtil.remove(filter, "age");
+		Assert.assertTrue((Boolean) map.get("isFound"));
+		Assert.assertEquals("age", map.get("field").toString());
+		Assert.assertEquals("gt", map.get("op").toString());
+		Assert.assertEquals("20", map.get("data").toString());
+		
+		Assert.assertEquals(expected, map.get("parentFilter").toString());
+	}
+	
+	@Test
+	public void testCreateParentAndChildFilter_SingleFieldRemoval() {
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"name\",\"op\":\"bw\",\"data\":\"Jane Adams\"}," +
+		"{\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}," +
+		"{\"field\":\"money\",\"op\":\"lt\",\"data\":\"2000.75\"}," +
+		"{\"field\":\"birthDate\",\"op\":\"eq\",\"data\":\"1959-09-30T00:00:00.000Z\"}," +
+		"{\"field\":\"creationDate\",\"op\":\"eq\",\"data\":\"01-31-1980\"}" +
+		"]}";
+		
+		String expectedParentFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"name\",\"op\":\"bw\",\"data\":\"Jane Adams\"}," +
+		"{\"field\":\"money\",\"op\":\"lt\",\"data\":\"2000.75\"}," +
+		"{\"field\":\"birthDate\",\"op\":\"eq\",\"data\":\"1959-09-30T00:00:00.000Z\"}," +
+		"{\"field\":\"creationDate\",\"op\":\"eq\",\"data\":\"01-31-1980\"}" +
+		"]}";
+
+		String expectedChildFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+				"[{\"junction\":\"and\"," + 
+				"\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}" +
+				"]}";
+		
+		List<String> fieldsToRemove = new ArrayList<String>();
+		fieldsToRemove.add("age");
+
+		Map<String, String> filters = QueryUtil.createParentAndChildFilter(filter, fieldsToRemove);
+		
+		Assert.assertEquals(expectedChildFilter, filters.get("childFilter"));
+		Assert.assertEquals(expectedParentFilter, filters.get("parentFilter"));
+	}
+	
+	@Test
+	public void testCreateParentAndChildFilter_MultipleFieldsRemoval() {
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"name\",\"op\":\"bw\",\"data\":\"Jane Adams\"}," +
+		"{\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}," +
+		"{\"field\":\"money\",\"op\":\"lt\",\"data\":\"2000.75\"}," +
+		"{\"field\":\"birthDate\",\"op\":\"eq\",\"data\":\"1959-09-30T00:00:00.000Z\"}," +
+		"{\"field\":\"creationDate\",\"op\":\"eq\",\"data\":\"01-31-1980\"}" +
+		"]}";
+		
+		String expectedParentFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"name\",\"op\":\"bw\",\"data\":\"Jane Adams\"}," +
+		"{\"field\":\"money\",\"op\":\"lt\",\"data\":\"2000.75\"}," +
+		"{\"field\":\"creationDate\",\"op\":\"eq\",\"data\":\"01-31-1980\"}" +
+		"]}";
+
+		String expectedChildFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+				"[{\"junction\":\"and\",\"field\":\"birthDate\",\"op\":\"eq\",\"data\":\"1959-09-30T00:00:00.000Z\"}," +
+				"{\"junction\":\"and\",\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}" +
+				"]}";
+		
+		List<String> fieldsToRemove = new ArrayList<String>();
+		fieldsToRemove.add("age");
+		fieldsToRemove.add("birthDate");
+
+		Map<String, String> filters = QueryUtil.createParentAndChildFilter(filter, fieldsToRemove);
+		
+		Assert.assertEquals(expectedChildFilter, filters.get("childFilter"));
+		Assert.assertEquals(expectedParentFilter, filters.get("parentFilter"));
 	}
 }

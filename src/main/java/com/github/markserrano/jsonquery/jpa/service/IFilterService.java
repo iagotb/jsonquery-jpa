@@ -40,9 +40,9 @@ public interface IFilterService<T extends Serializable> {
 	public Page<T> read(String filter, Class<T> clazz, Pageable page, OrderSpecifier order);
 	public JsonBooleanBuilder getJsonBooleanBuilder(Class<T> clazz);
 	
-	public List<T> read(BooleanBuilder builder, BooleanBuilder joinBuilder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias, OrderSpecifier order);
-	public Long count(BooleanBuilder builder, BooleanBuilder joinBuilder, Class<T> clazz, PathBuilder<?> alias, PathBuilder<?> joinPath, OrderSpecifier order);
-	public Page<T> readAndCount(BooleanBuilder builder, BooleanBuilder joinBuilder, Pageable page, Class<T> clazz, PathBuilder<?> joinPath, PathBuilder<?> alias, OrderSpecifier order);
+	public List<T> read(BooleanBuilder builder, Pageable page, Class<T> clazz, OrderSpecifier order, BooleanBuilder joinChildBuilder, String joinChildField, Class<?> joinChildClass);
+	public Long count(BooleanBuilder builder, Class<T> clazz, OrderSpecifier order, BooleanBuilder joinChildBuilder, String joinChildField, Class<?> joinChildClass);
+	public Page<T> readAndCount(BooleanBuilder builder, Pageable page, Class<T> clazz, OrderSpecifier order, BooleanBuilder joinChildBuilder, String joinChildField, Class<?> joinChildClass);
 	
 	public T findOne(BooleanBuilder builder, Class<T> clazz);
 

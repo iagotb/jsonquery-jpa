@@ -139,10 +139,9 @@ public class ParentEntityServiceTest {
 
 		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
 		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
-		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
-		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "child");
-		Page<Parent> results = service.readAndCount(builder, childBuilder, new PageRequest(0,3), Parent.class, p.get("children"), alias, orderSpecifier);
-	
+
+		Page<Parent> results = service.readAndCount(builder, new PageRequest(0,3), Parent.class, orderSpecifier, childBuilder, "children", Child.class);
+		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(6, results.getTotalElements());
 		
@@ -151,7 +150,7 @@ public class ParentEntityServiceTest {
 				"[{\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}]" +
 				"}";
 		childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
-		results = service.readAndCount(builder, childBuilder, new PageRequest(0,3), Parent.class, p.get("children"), alias, orderSpecifier);
+		results = service.readAndCount(builder, new PageRequest(0,3), Parent.class, orderSpecifier, childBuilder, "children", Child.class);
 		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(2, results.getTotalElements());
@@ -165,16 +164,14 @@ public class ParentEntityServiceTest {
 		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
 		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
 
-		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
-		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "child");
-		
-		Page<Parent> results = service.readAndCount(builder, childBuilder, new PageRequest(0,10), Parent.class, p.get("children"), alias, orderSpecifier);
+		Page<Parent> results = service.readAndCount(builder, new PageRequest(0,10), Parent.class, orderSpecifier, childBuilder, "children", Child.class);
 		
 		Assert.assertNotNull(results);
-		Assert.assertEquals(3, results.getTotalElements());
+		Assert.assertEquals(4, results.getTotalElements());
 		Assert.assertEquals(1, results.getContent().get(0).getId().intValue());
-		Assert.assertEquals(1, results.getContent().get(1).getId().intValue());
-		Assert.assertEquals(4, results.getContent().get(2).getId().intValue());
+		Assert.assertEquals(2, results.getContent().get(1).getId().intValue());
+		Assert.assertEquals(3, results.getContent().get(2).getId().intValue());
+		Assert.assertEquals(4, results.getContent().get(3).getId().intValue());
 	}
 	
 	@Test 
@@ -189,15 +186,31 @@ public class ParentEntityServiceTest {
 		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
 		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
 
-		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
-		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "child");
-		
-		Page<Parent> results = service.readAndCount(builder, childBuilder, new PageRequest(0,10), Parent.class, p.get("children"), alias, orderSpecifier);
+		Page<Parent> results = service.readAndCount(builder, new PageRequest(0,10), Parent.class, orderSpecifier, childBuilder, "children", Child.class);
 		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(3, results.getTotalElements());
 		Assert.assertEquals(1, results.getContent().get(0).getId().intValue());
 		Assert.assertEquals(1, results.getContent().get(1).getId().intValue());
+		Assert.assertEquals(4, results.getContent().get(2).getId().intValue());
+	}
+	
+	@Test 
+	public void testReadAndCount_UsingJoins_WhenParentIsFiltered_AndChildIsNotFiltered() {
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+				"[{\"field\":\"store\",\"op\":\"ne\",\"data\":\"StoreB\"}]" +
+				"}";
+		String childFilter = QueryUtil.init();
+
+		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
+		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
+
+		Page<Parent> results = service.readAndCount(builder, new PageRequest(0,10), Parent.class, orderSpecifier, childBuilder, "children", Child.class);
+		
+		Assert.assertNotNull(results);
+		Assert.assertEquals(3, results.getTotalElements());
+		Assert.assertEquals(1, results.getContent().get(0).getId().intValue());
+		Assert.assertEquals(3, results.getContent().get(1).getId().intValue());
 		Assert.assertEquals(4, results.getContent().get(2).getId().intValue());
 	}
 	
@@ -213,11 +226,8 @@ public class ParentEntityServiceTest {
 
 		BooleanBuilder builder = jsonBooleanBuilder.build(new JsonFilter(filter));
 		BooleanBuilder childBuilder = childBooleanBuilder.build(new JsonFilter(childFilter));
-
-		PathBuilder<Parent> p = new PathBuilder<Parent>(Parent.class, "parent");
-		PathBuilder<Child> alias = new PathBuilder<Child>(Child.class, "child");
 		
-		Page<Parent> results = service.readAndCount(builder, childBuilder, new PageRequest(0,2), Parent.class, p.get("children"), alias, orderSpecifier);
+		Page<Parent> results = service.readAndCount(builder, new PageRequest(0,2), Parent.class, orderSpecifier, childBuilder, "children", Child.class);
 		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(3, results.getTotalElements());
@@ -225,7 +235,7 @@ public class ParentEntityServiceTest {
 		Assert.assertEquals(1, results.getContent().get(1).getId().intValue());
 		
 		// Scenario 2
-		results = service.readAndCount(builder, childBuilder, new PageRequest(1,2), Parent.class, p.get("children"), alias, orderSpecifier);
+		results = service.readAndCount(builder, new PageRequest(1,2), Parent.class, orderSpecifier, childBuilder, "children", Child.class);
 		
 		Assert.assertNotNull(results);
 		Assert.assertEquals(3, results.getTotalElements());

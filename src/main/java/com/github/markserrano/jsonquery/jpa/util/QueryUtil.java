@@ -145,16 +145,10 @@ public class QueryUtil {
 				FIELD + COLON + "(" + escape(field) + ")" + COMMA +
 				OP + COLON + "(" + "\"[A-Za-z]{2}\"" + ")" + COMMA  +
 				DATA + COLON + "(" + ".+" + ")" + "\\" + CLOSE_BRACKET;
-		//System.out.println(pattern);
 		
 		Pattern p = Pattern.compile(pattern);
 		Matcher m = p.matcher(filter);
 		if (m.find()) {
-		   // System.out.println("+++++");
-		   // System.out.println(m.group(1));
-		   // System.out.println(m.group(2));
-		   // System.out.println(m.group(3).split("\\}")[0]);
-		   // System.out.println("+++++");
 		    map.put("field", m.group(1).replace("\"", ""));
 		    map.put("op", m.group(2).replace("\"", ""));
 		    map.put("data", m.group(3).split("\\}")[0].replace("\"", ""));
@@ -165,10 +159,11 @@ public class QueryUtil {
 							OP + COLON + escape(map.get("op").toString()) + COMMA +
 							DATA + COLON + escape(map.get("data").toString()) + CLOSE_BRACKET;
 
-			//System.out.println(expression);
 			String f1 = filter.replace(expression + ",", "");
 			String f2 = f1.replace(expression, "");
 			map.put("parentFilter", f2);
+		} else {
+			map.put("parentFilter", filter);
 		}
 		
 		return map;
@@ -187,8 +182,11 @@ public class QueryUtil {
 			} else {
 				map = QueryUtil.remove(map.get("parentFilter").toString(), f);
 			}
-			childFilter = QueryUtil.addAnd(childFilter, map.get("field").toString(), 
-					OperatorEnum.getEnum(map.get("op").toString()), map.get("data").toString());
+
+			if (map.get("field") != null) {
+				childFilter = QueryUtil.addAnd(childFilter, map.get("field").toString(), 
+						OperatorEnum.getEnum(map.get("op").toString()), map.get("data").toString());
+			}
 		}
 		
 		filterMap.put("childFilter", childFilter);

@@ -17,18 +17,11 @@
 package com.github.markserrano.jsonquery.jpa.filter;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
 import junit.framework.Assert;
 
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import com.github.markserrano.jsonquery.jpa.util.DateTimeUtil;
 
 public class LeadFilterReplacementTest {
 

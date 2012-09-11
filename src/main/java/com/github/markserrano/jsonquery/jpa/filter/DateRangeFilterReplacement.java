@@ -16,12 +16,9 @@
 
 package com.github.markserrano.jsonquery.jpa.filter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 
-import com.github.markserrano.jsonquery.jpa.enumeration.OperatorEnum;
-import com.github.markserrano.jsonquery.jpa.util.DateTimeUtil;
 import com.github.markserrano.jsonquery.jpa.util.FieldReplacementUtil;
 import com.github.markserrano.jsonquery.jpa.util.QueryUtil;
 

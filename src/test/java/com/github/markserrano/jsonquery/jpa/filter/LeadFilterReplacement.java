@@ -39,6 +39,7 @@ public class LeadFilterReplacement extends DateRangeFilterReplacement {
 		return replacement;
 	}
 	
+	@Override
 	public String preReplace(String filter) {
 		if (FieldReplacementUtil.doesFieldAndOpExists(filter, "createDate", "eq")) {
 			filter = FieldReplacementUtil.forDateRange(filter, "createDate");

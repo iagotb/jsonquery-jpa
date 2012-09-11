@@ -16,6 +16,10 @@
 
 package com.github.markserrano.jsonquery.jpa.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,9 +41,7 @@ import com.github.markserrano.jsonquery.jpa.filter.JsonFilter;
 import com.github.markserrano.jsonquery.jpa.specifier.Order;
 import com.github.markserrano.jsonquery.jpa.util.QueryUtil;
 import com.mysema.query.BooleanBuilder;
-import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.path.PathBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration (locations = { "classpath:applicationContext.xml" })
@@ -240,5 +242,24 @@ public class ParentEntityServiceTest {
 		Assert.assertNotNull(results);
 		Assert.assertEquals(3, results.getTotalElements());
 		Assert.assertEquals(4, results.getContent().get(0).getId().intValue());
+	}
+	
+	@Test
+	public void testReadAndCount_UsingJoin_WhenGenericFilter_ThenSplitFilters() {
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}," +
+		"{\"field\":\"store\",\"op\":\"ne\",\"data\":\"StoreA\"}" +
+		"]}";
+		
+		List<String> fieldsToRemove = new ArrayList<String>();
+		fieldsToRemove.add("age");
+		fieldsToRemove.add("birthDate");
+		fieldsToRemove.add("money");
+		fieldsToRemove.add("creationDate");
+		fieldsToRemove.add("name");
+
+		Page<Parent> results = service.readAndCount(filter, new PageRequest(0,3), Parent.class, orderSpecifier, "children", Child.class, fieldsToRemove);
+
+		Assert.assertEquals(1, results.getTotalElements());
 	}
 }

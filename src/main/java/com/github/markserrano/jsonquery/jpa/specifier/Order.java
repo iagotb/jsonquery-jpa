@@ -16,7 +16,6 @@
 
 package com.github.markserrano.jsonquery.jpa.specifier;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.joda.time.DateTime;

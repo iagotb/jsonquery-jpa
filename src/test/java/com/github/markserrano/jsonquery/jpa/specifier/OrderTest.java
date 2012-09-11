@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.markserrano.jsonquery.jpa.domain.Child;
-import com.github.markserrano.jsonquery.jpa.domain.GrandChild;
 import com.github.markserrano.jsonquery.jpa.enumeration.OrderEnum;
 import com.github.markserrano.jsonquery.jpa.specifier.Order;
 

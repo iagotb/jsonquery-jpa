@@ -28,7 +28,6 @@ import org.junit.Test;
 import com.github.markserrano.jsonquery.jpa.builder.JsonBooleanBuilder;
 import com.github.markserrano.jsonquery.jpa.domain.Child;
 import com.github.markserrano.jsonquery.jpa.filter.JsonFilter;
-import com.github.markserrano.jsonquery.jpa.mapper.JsonObjectMapper;
 import com.mysema.query.BooleanBuilder;
 
 public class JsonBooleanBuilderOperatorTest {

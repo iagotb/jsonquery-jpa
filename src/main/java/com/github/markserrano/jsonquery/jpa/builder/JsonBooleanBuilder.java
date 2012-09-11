@@ -15,7 +15,6 @@
  */
 package com.github.markserrano.jsonquery.jpa.builder;
 
-import java.io.Serializable;
 import org.apache.log4j.Logger;
 
 import com.github.markserrano.jsonquery.jpa.builder.operator.BeginsWithBuilder;

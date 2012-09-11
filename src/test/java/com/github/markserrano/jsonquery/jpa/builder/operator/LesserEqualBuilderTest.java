@@ -18,23 +18,14 @@ package com.github.markserrano.jsonquery.jpa.builder.operator;
 
 import junit.framework.Assert;
 
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.markserrano.jsonquery.jpa.builder.JunctionBuilder;
 import com.github.markserrano.jsonquery.jpa.builder.operator.LesserEqualBuilder;
 import com.github.markserrano.jsonquery.jpa.domain.Child;
 import com.github.markserrano.jsonquery.jpa.filter.JsonFilter;
-import com.github.markserrano.jsonquery.jpa.util.ClassUtil;
-import com.github.markserrano.jsonquery.jpa.util.DateTimeUtil;
-import com.github.markserrano.jsonquery.jpa.util.DateTimeZoneModifier;
-import com.github.markserrano.jsonquery.jpa.util.DateTimeZoneRule;
-import com.github.markserrano.jsonquery.jpa.util.PathUtil;
 import com.mysema.query.BooleanBuilder;
-import com.mysema.query.types.path.DatePath;
 
 public class LesserEqualBuilderTest {
 

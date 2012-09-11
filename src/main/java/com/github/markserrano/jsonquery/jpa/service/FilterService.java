@@ -18,6 +18,7 @@ package com.github.markserrano.jsonquery.jpa.service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -29,10 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.github.markserrano.jsonquery.jpa.builder.JsonBooleanBuilder;
-import com.github.markserrano.jsonquery.jpa.builder.operator.EqualBuilder;
-import com.github.markserrano.jsonquery.jpa.domain.Child;
-import com.github.markserrano.jsonquery.jpa.domain.Parent;
 import com.github.markserrano.jsonquery.jpa.filter.JsonFilter;
+import com.github.markserrano.jsonquery.jpa.util.QueryUtil;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.jpa.JPQLQuery;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -87,6 +86,17 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 	}
 	
 	@Override
+	public Page<T> readAndCount(String filter, Pageable page, Class<T> clazz, OrderSpecifier order, String joinChildField, Class<?> joinChildClass, List<String> childFields) {
+		Map<String, String> filters = QueryUtil.createParentAndChildFilter(filter, childFields);
+		BooleanBuilder parentBuilder = new JsonBooleanBuilder(clazz).build(new JsonFilter(filters.get("parentFilter").toString()));
+		BooleanBuilder joinChildBuilder = new JsonBooleanBuilder(joinChildClass).build(new JsonFilter(filters.get("childFilter").toString()));
+		
+		Page<T> pageImpl = new PageImpl<T>(read(parentBuilder, page, clazz, order, joinChildBuilder, joinChildField, joinChildClass), 
+				page, count(parentBuilder, clazz, order, joinChildBuilder, joinChildField, joinChildClass));
+		return pageImpl;
+	}
+	
+	@Override
 	public List<T> read(BooleanBuilder builder, Pageable page, Class<T> clazz, OrderSpecifier order) {
 		String variable = clazz.getSimpleName().substring(0, 1).toLowerCase() + clazz.getSimpleName().substring(1);
 		PathBuilder<T> entityPath = new PathBuilder<T>(clazz, variable);
@@ -115,8 +125,8 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 			PathBuilder<T> joinPath = new PathBuilder<T>(clazz, variable);
 			PathBuilder<Object> joinAlias = new PathBuilder<Object>(joinChildClass, childVariable);
 			
-			EntityPath<T> jPath = (EntityPath<T>) joinPath.get(joinChildField);
-			EntityPath<T> jAlias = (EntityPath<T>) joinAlias;
+			EntityPath<Object> jPath = joinPath.get(joinChildField);
+			EntityPath<Object> jAlias = joinAlias;
 			
 			JPQLQuery result = new JPAQuery(em).from(path).join(jPath, jAlias).with(joinChildBuilder).where(builder).orderBy(order);
 	
@@ -155,8 +165,8 @@ public class FilterService<T extends Serializable> implements IFilterService<T> 
 			PathBuilder<T> joinPath = new PathBuilder<T>(clazz, variable);
 			PathBuilder<Object> joinAlias = new PathBuilder<Object>(joinChildClass, childVariable);
 			
-			EntityPath<T> jPath = (EntityPath<T>) joinPath.get(joinChildField);
-			EntityPath<T> jAlias = (EntityPath<T>) joinAlias;
+			EntityPath<Object> jPath = joinPath.get(joinChildField);
+			EntityPath<Object> jAlias = joinAlias;
 			
 			JPQLQuery result = new JPAQuery(em).from(path).join(jPath, jAlias).with(joinChildBuilder).where(builder).orderBy(order);
 			

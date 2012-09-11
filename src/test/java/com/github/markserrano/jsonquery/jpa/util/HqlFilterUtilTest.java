@@ -16,17 +16,13 @@
 
 package com.github.markserrano.jsonquery.jpa.util;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.markserrano.jsonquery.jpa.enumeration.OrderEnum;
 import com.github.markserrano.jsonquery.jpa.filter.FilterReplacement;
 import com.github.markserrano.jsonquery.jpa.filter.LeadFilterReplacement;
-import com.github.markserrano.jsonquery.jpa.response.JqgridResponse;
 import com.github.markserrano.jsonquery.jpa.util.HqlFilterUtil;
 
 

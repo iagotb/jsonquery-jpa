@@ -16,6 +16,10 @@
 
 package com.github.markserrano.jsonquery.jpa.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,6 +38,7 @@ import com.github.markserrano.jsonquery.jpa.domain.Child;
 import com.github.markserrano.jsonquery.jpa.enumeration.OrderEnum;
 import com.github.markserrano.jsonquery.jpa.filter.JsonFilter;
 import com.github.markserrano.jsonquery.jpa.specifier.Order;
+import com.github.markserrano.jsonquery.jpa.util.QueryUtil;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.OrderSpecifier;
 
@@ -192,4 +197,5 @@ public class ParentChildEntityServiceTest {
 		Assert.assertEquals( "StoreC", results.getContent().get(1).getParent().getStore() );
 		Assert.assertEquals( "StoreD", results.getContent().get(2).getParent().getStore() );
 	}
+
 }

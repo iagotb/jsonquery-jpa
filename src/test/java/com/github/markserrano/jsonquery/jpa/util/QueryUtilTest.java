@@ -324,4 +324,29 @@ public class QueryUtilTest {
 		Assert.assertEquals(expectedChildFilter, filters.get("childFilter"));
 		Assert.assertEquals(expectedParentFilter, filters.get("parentFilter"));
 	}
+	
+	@Test
+	public void testCreateParentAndChildFilter_WhenChildFieldToRemoveIsSecondEntry() {
+		String filter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"name\",\"op\":\"bw\",\"data\":\"Jane Adams\"}," +
+		"{\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}" +
+		"]}";
+		
+		String expectedParentFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+		"[{\"field\":\"name\",\"op\":\"bw\",\"data\":\"Jane Adams\"}" +
+		"]}";
+
+		String expectedChildFilter = "{\"groupOp\":\"AND\",\"rules\":" +
+				"[{\"junction\":\"and\",\"field\":\"age\",\"op\":\"gt\",\"data\":\"20\"}" +
+				"]}";
+		
+		List<String> fieldsToRemove = new ArrayList<String>();
+		fieldsToRemove.add("age");
+		fieldsToRemove.add("birthDate");
+
+		Map<String, String> filters = QueryUtil.createParentAndChildFilter(filter, fieldsToRemove);
+		
+		Assert.assertEquals(expectedChildFilter, filters.get("childFilter"));
+		Assert.assertEquals(expectedParentFilter, filters.get("parentFilter"));
+	}
 }

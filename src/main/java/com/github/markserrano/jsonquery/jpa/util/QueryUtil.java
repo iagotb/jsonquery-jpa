@@ -159,9 +159,10 @@ public class QueryUtil {
 							OP + COLON + escape(map.get("op").toString()) + COMMA +
 							DATA + COLON + escape(map.get("data").toString()) + CLOSE_BRACKET;
 
-			String f1 = filter.replace(expression + ",", "");
-			String f2 = f1.replace(expression, "");
-			map.put("parentFilter", f2);
+			String f1 = filter.replace("," + expression, "");
+			String f2 = f1.replace(expression + ",", "");
+			String f3 = f2.replace(expression, "");
+			map.put("parentFilter", f3);
 		} else {
 			map.put("parentFilter", filter);
 		}
